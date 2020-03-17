@@ -22,31 +22,34 @@ function ListItemLink(props) {
 }
 
 function populateBills(bills) {
-  return bills.map(bill => (
-    <ExpansionPanel>
-      <ExpansionPanelSummary>
-        <Typography variant="h5">
-          {bill.title}, ${bill.total}
-        </Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails>
-        {bill.payments.map(payment => {
-          const label = `${payment.from} owes ${payment.to} $${payment.amount}`;
-          return (
-            <div key={payment.id}>
-              <FormControlLabel
-                aria-label="Acknowledge"
-                onClick={event => event.stopPropagation()}
-                onFocus={event => event.stopPropagation()}
-                control={<Checkbox checked={payment.is_paid} />}
-                label={label}
-              />
-            </div>
-          );
-        })}
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
-  ));
+  if (bills.length !== 0) {
+    return bills.map(bill => (
+      <ExpansionPanel>
+        <ExpansionPanelSummary>
+          <Typography variant="h5">
+            {bill.title}, ${bill.total}
+          </Typography>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails>
+          {bill.payments.map(payment => {
+            const label = `${payment.from} owes ${payment.to} $${payment.amount}`;
+            return (
+              <div key={payment.id}>
+                <FormControlLabel
+                  aria-label="Acknowledge"
+                  onClick={event => event.stopPropagation()}
+                  onFocus={event => event.stopPropagation()}
+                  control={<Checkbox checked={payment.is_paid} />}
+                  label={label}
+                />
+              </div>
+            );
+          })}
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
+    ));
+  }
+  return null;
 }
 
 class TransactionList extends React.Component {
@@ -54,20 +57,22 @@ class TransactionList extends React.Component {
     super(props);
 
     this.state = {
-      bills: []
+      billData: {
+        bills: []
+      }
     };
   }
 
   componentDidMount() {
     //  actual address http://0.0.0.0:1234/api/bill_data/get_bill
-    fetch("https://jake-good.free.beeceptor.com/my/api/path") // temp
+    fetch("/api/bill_data/get_bills") // temp
       .then(res => {
         return res.json();
       })
       .then(data => {
         // make a mapping of bills to list items here and render it below
         this.setState({
-          bills: data
+          billData: data
         });
       })
       .catch(err => {
@@ -76,10 +81,10 @@ class TransactionList extends React.Component {
   }
 
   render() {
-    const { bills } = this.state;
+    const { billData } = this.state;
     return (
       <div>
-        {populateBills(bills)}
+        {populateBills(billData.bills)}
         <List component="nav" aria-label="main mailbox folders">
           <Divider />
           <ListItem button>

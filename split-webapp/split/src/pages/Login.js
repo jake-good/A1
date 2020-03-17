@@ -90,6 +90,16 @@ function Login() {
                         color="primary"
                         borderRadius={30}
                         className={classes.margin}
+                        onClick={fetch("/api/account/login", {
+                          method: "POST",
+                          body: JSON.stringify({
+                            username: "Bob",
+                            password: "password"
+                          }),
+                          headers: {
+                            "Content-Type": "application/json"
+                          }
+                        })}
                       >
                         Log In
                       </Button>
